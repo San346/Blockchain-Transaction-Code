@@ -1,131 +1,57 @@
-# Blockchain-Transaction-Code
-#define MAX_TRANSACTIONS 5
-#define MAX_LEDGER 10  // Max number of transactions in the ledger
+# 🚀 Blockchain Transaction Simulator using Arduino Uno
 
-struct Transaction {
-  String sender;
-  String receiver;
-  int amount;
-  String transactionID;
-};
+## 📌 About the Project
+This project is a **miniature blockchain simulator built with an Arduino Uno** that mimics how transactions are added, mined into blocks, and stored in a ledger — all via the **Serial Monitor**. It’s designed as an **educational tool** for beginners to visualize blockchain mechanics without using a traditional network.
 
-Transaction transactionPool[MAX_TRANSACTIONS];
-int transactionCount = 0;
+## 🎯 Key Features
+- ✅ Add custom transactions via Serial input  
+- ⛏ Mine blocks using a simplified Proof-of-Work (PoW) algorithm  
+- 📜 Display a full ledger with hash representation  
+- 🧠 Understand blockchain fundamentals (hashing, nonce, transaction pooling)
 
-Transaction ledger[MAX_LEDGER];
-int ledgerCount = 0;
+## 🔧 Hardware Used
+- **Arduino Uno**
+- **USB Cable** (for programming and serial communication)
+- 💻 PC with Arduino IDE installed
 
-// Simulated hash function (not secure)
-String simpleHash(String input, int nonce) {
-  int hash = 0;
-  for (int i = 0; i < input.length(); i++) {
-    hash += input.charAt(i);
-  }
-  hash += nonce;
-  return String(hash, DEC); // Decimal format to match screenshot
-}
+## 🧑‍💻 How It Works
+1. Open the **Serial Monitor** (baud rate: 9600)
+2. Use commands:
+   - `add sender receiver amount id` → Adds a transaction  
+   - `mine` → Mines current transactions into a block  
+   - `display` → Shows the blockchain ledger
 
-void addTransaction(String sender, String receiver, int amount, String transactionID) {
-  if (transactionCount < MAX_TRANSACTIONS) {
-    transactionPool[transactionCount++] = {sender, receiver, amount, transactionID};
-    Serial.println("✅ Transaction added.");
-  } else {
-    Serial.println("⚠️ Transaction pool full. Please mine the block!");
-  }
-}
+3. Example:
+   ```
+   add Alice Bob 10 tx001
+   mine
+   display
+   ```
 
-void mineBlock() {
-  if (transactionCount == 0) {
-    Serial.println("⚠️ No transactions to mine.");
-    return;
-  }
+## 💡 Sample Output
+```
+✅ Transaction added.
+⛏ Block Mined! ✅
+Block Hash: 5a2
+Nonce: 3
+===== 📜 Blockchain Ledger =====
+Tx ID: tx001 | From: Alice → To: Bob | Amount: 10 ETH | Hash: 53b
+================================
+```
 
-  String blockData = "";
-  for (int i = 0; i < transactionCount; i++) {
-    blockData += transactionPool[i].sender + transactionPool[i].receiver + String(transactionPool[i].amount) + transactionPool[i].transactionID;
-  }
+## 📂 Project Files
+- `blockchain_simulator.ino` – Main Arduino code  
+- `README.md` – Project documentation
 
-  int nonce = 0;
-  String blockHash;
-  do {
-    blockHash = simpleHash(blockData, nonce);
-    nonce++;
-  } while (!blockHash.startsWith("0"));
+## 📷 Snapshots
+You can include images like:
+- 📸 Serial Monitor output
+- 🧩 Code snippets (screenshots)
+- 🛠 Arduino Uno setup on your desk
+- 🎓 Faculty demo pictures
 
-  Serial.println("⛏ Block Mined! ✅");
-  Serial.print("Block Hash: ");
-  Serial.println(blockHash);
-  Serial.print("Nonce: ");
-  Serial.println(nonce);
-
-  for (int i = 0; i < transactionCount && ledgerCount < MAX_LEDGER; i++) {
-    ledger[ledgerCount++] = transactionPool[i];
-  }
-
-  transactionCount = 0;
-}
-
-void displayBlockchain() {
-  if (ledgerCount == 0) {
-    Serial.println("ℹ️ No transactions in ledger.");
-    return;
-  }
-
-  Serial.println("===== 📜 Blockchain Ledger =====");
-  for (int i = 0; i < ledgerCount; i++) {
-    String data = ledger[i].sender + ledger[i].receiver + String(ledger[i].amount) + ledger[i].transactionID;
-    String hash = simpleHash(data, 0);  // Basic hash without PoW
-    Serial.print("Tx ID: ");
-    Serial.print(ledger[i].transactionID);
-    Serial.print(" | From: ");
-    Serial.print(ledger[i].sender);
-    Serial.print(" → To: ");
-    Serial.print(ledger[i].receiver);
-    Serial.print(" | Amount: ");
-    Serial.print(ledger[i].amount);
-    Serial.print(" ETH | Hash: ");
-    Serial.println(hash);
-  }
-  Serial.println("================================");
-}
-
-void setup() {
-  Serial.begin(9600);
-  Serial.println("🚀 Blockchain Transaction Simulator Initialized!");
-  Serial.println("Commands: 'add sender receiver amount id' | 'mine' | 'display'");
-}
-
-void loop() {
-  if (Serial.available()) {
-    String input = Serial.readStringUntil('\n');
-    input.trim();
-
-    if (input.startsWith("add ")) {
-      input = input.substring(4);
-      int firstSpace = input.indexOf(" ");
-      int secondSpace = input.indexOf(" ", firstSpace + 1);
-      int thirdSpace = input.indexOf(" ", secondSpace + 1);
-
-      if (firstSpace == -1 || secondSpace == -1 || thirdSpace == -1) {
-        Serial.println("⚠️ Invalid format. Use: add sender receiver amount id");
-        return;
-      }
-
-      String sender = input.substring(0, firstSpace);
-      String receiver = input.substring(firstSpace + 1, secondSpace);
-      int amount = input.substring(secondSpace + 1, thirdSpace).toInt();
-      String id = input.substring(thirdSpace + 1);
-
-      addTransaction(sender, receiver, amount, id);
-    } 
-    else if (input == "mine") {
-      mineBlock();
-    } 
-    else if (input == "display") {
-      displayBlockchain();
-    } 
-    else {
-      Serial.println("⚠️ Invalid command. Use: 'add sender receiver amount id' | 'mine' | 'display'");
-    }
-  }
-}
+## 👩‍💻 Developed By
+**Sandhiya Sri**  
+Aspiring Data Scientist & Full Stack Developer  
+VIT Vellore | Intern @ Jol Energy  
+📧 srirev8523@gmail.com
